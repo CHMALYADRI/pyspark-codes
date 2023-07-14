@@ -1,0 +1,15 @@
+from pyspark.sql import SparkSession
+import os
+from pyspark import SparkContext, SparkConf
+os.environ["PYSPARK_SUBMIT_ARGS"]="--packages com.amazonaws:aws-java-sdk-s3:1.12.196,org.apache.hadoop:hadoop-aws:3.3.1 pyspark-shell"
+conf=SparkConf().setAppName("s3tospark")
+
+
+hadoopConf=SparkContext()._jsc.hadoopConfiguration()
+hadoopConf.set('fs.s3a.access.key','AKIASE4M7QLNIDZVTNQ')
+hadoopConf.set('fs.s3a.secret.key', 'hOyra7loVoTfi09KWl6Q4z6ivndK6xPlRbZkoGr9')              
+hadoopConf.set('saprk.hadoop.fs.s3a.aws.credentials.provider','org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider')
+spark = SparkSession.builder.appName("Postgres Connection").config("spark.jars", "/postgresql-42.6.0.jar").getOrCreate()
+
+df = spark.read.format("jdbc").option("url", "jdbc:postgresql://mydb.c0q7bowmj0q8.ap-south-1.rds.amazonaws.com:5432/mydatabase").option("dbtable", "student").option("user", "postgres").option("password", "Thanvi2021").load()
+df.show(5)
